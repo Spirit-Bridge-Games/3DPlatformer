@@ -158,6 +158,6 @@ public class Mover : MonoBehaviour
     private void UpdateAnimator()
     {
         animator.SetBool("Jump", isJumping);
-        animator.SetFloat("Speed", rb.velocity.z);
+        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.magnitude));
     }
 }
