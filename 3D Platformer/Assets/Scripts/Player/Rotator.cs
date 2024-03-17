@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Rotator : MonoBehaviour
 {
+
+    Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        var mouseX = Input.GetAxis("Mouse X");
-
-        transform.Rotate(new Vector3(0, mouseX, 0));
+        transform.eulerAngles = new Vector3(0,rb.velocity.magnitude,0);
     }
 }

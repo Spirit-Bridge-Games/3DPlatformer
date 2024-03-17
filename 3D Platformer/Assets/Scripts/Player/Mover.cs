@@ -36,7 +36,11 @@ public class Mover : MonoBehaviour
     public Transform groundCheckPoint;
     public Vector3 groundcheckSize;
 
-    public LayerMask groundLayer;
+    public string groundLayer;
+
+    [Space]
+
+    public Animator animator;
 
     float lastGroundedTime;
     float lastJumpTime;
@@ -48,14 +52,23 @@ public class Mover : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+    }
 
+    private void Update()
+    {
         #region Timer
         lastGroundedTime -= Time.deltaTime;
         lastJumpTime -= Time.deltaTime;
         #endregion
 
+        if (Input.GetButtonDown("Jump"))
+        {
+            OnJumpInput();
+        }
+
+
         #region Jump
-        if (lastGroundedTime > 0 && lastJumpTime > 0 && !isJumping)
+        if (CanJump())
         {
             Jump();
         }
@@ -65,6 +78,8 @@ public class Mover : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        UpdateAnimator();
+
         Vector3 movement = Vector3.zero;
         #region Run
         movement.z = Movement("Vertical", rb.velocity.z);
@@ -118,17 +133,31 @@ public class Mover : MonoBehaviour
         lastJumpTime = 0;
         isJumping = true;
         //jumpInputReleased = false;
-
-        OnJump();
     }
 
-    private void OnJump()
+    private void OnJumpInput()
     {
         lastJumpTime = jumpBufferTime;
     }
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log("On Floor");
+        if(other.gameObject.layer == LayerMask.NameToLayer(groundLayer.ToString()))
+        {
+            lastGroundedTime = jumpCoyoteTime;
+            isJumping = false;
+            Debug.Log(lastGroundedTime);
+        }
+    }
+
+    private bool CanJump()
+    {
+        return lastGroundedTime > 0 && lastJumpTime > 0 && !isJumping;
+    }
+
+    private void UpdateAnimator()
+    {
+        animator.SetBool("Jump", isJumping);
+        animator.SetFloat("Speed", rb.velocity.z);
     }
 }
